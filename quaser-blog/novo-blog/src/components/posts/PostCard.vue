@@ -1,5 +1,5 @@
 <template>
-  <div class="post-card">
+  <div class="post-card" @click="viewPost">
     <q-img
       class="post-card__image"
       :src="post.imagem"
@@ -15,7 +15,7 @@
 
     <div class="post-card__content">
       <div class="post-card__header">
-        <h3 class="post-card__title">{{ post.titulo }}</h3>
+        <h3 class="post-card__title">{{ post.titulo }}</h3> 
         <q-chip
           dense
           color="primary"
@@ -41,9 +41,9 @@
     </div>
 
     <div class="post-card__actions">
-      <q-btn flat dense round icon="visibility" color="grey-8" @click="viewPost" aria-label="Visualizar Post" />
-      <q-btn flat dense round icon="edit" color="blue-8" @click="editPost" aria-label="Editar Post" />
-      <q-btn flat dense round icon="delete" color="red-8" @click="deletePost" aria-label="Deletar Post" />
+      <q-btn flat dense round icon="visibility" color="grey-8" @click.stop="viewPost" aria-label="Visualizar Post" />
+      <q-btn flat dense round icon="edit" color="blue-8" @click.stop="editPost" aria-label="Editar Post" />
+      <q-btn flat dense round icon="delete" color="red-8" @click.stop="deletePost" aria-label="Deletar Post" />
     </div>
   </div>
 </template>
@@ -52,7 +52,6 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
-// 1. Definindo as propriedades (props) que o componente espera receber
 const props = defineProps({
   post: {
     type: Object,
@@ -60,17 +59,14 @@ const props = defineProps({
   }
 })
 
-// 2. Definindo os eventos (emits) que o componente pode disparar para o pai
 const emit = defineEmits(['delete'])
 const router = useRouter()
 
-// 3. Computeds para formatar dados
 const formattedDate = computed(() => {
   if (!props.post.dataPublicacao) return ''
   return new Date(props.post.dataPublicacao).toLocaleDateString('pt-BR')
 })
 
-// 4. Métodos para manipular ações
 function viewPost () {
   router.push(`/posts/${props.post.id}`)
 }
@@ -80,7 +76,6 @@ function editPost () {
 }
 
 function deletePost () {
-  // Dispara o evento 'delete' para o componente pai, passando o ID do post
   emit('delete', props.post.id)
 }
 </script>
@@ -90,11 +85,12 @@ function deletePost () {
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden; /* Garante que a imagem com borda arredondada se ajuste */
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  height: 100%; /* Garante que todos os cards na grade tenham a mesma altura */
+  height: 100%;
+  cursor: pointer; // Indica que o card inteiro é clicável
 
   &:hover {
     transform: translateY(-5px);
@@ -109,7 +105,7 @@ function deletePost () {
     padding: 16px;
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* Faz esta área crescer para preencher o espaço */
+    flex-grow: 1;
   }
 
   &__header {
@@ -124,22 +120,21 @@ function deletePost () {
     font-weight: 600;
     margin: 0;
     line-height: 1.2;
-    margin-right: 8px; // Espaço para o chip não colar
+    margin-right: 8px;
   }
 
   &__category {
-    flex-shrink: 0; // Impede que o chip encolha
+    flex-shrink: 0;
   }
 
   &__description {
     font-size: 0.9rem;
     color: #555;
     margin: 0 0 16px 0;
-    flex-grow: 1; /* Ocupa o espaço disponível, empurrando os metadados para baixo */
+    flex-grow: 1;
 
-    // Efeito de ellipsis (...)
     display: -webkit-box;
-    -webkit-line-clamp: 3; // Limita a 3 linhas
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -153,12 +148,6 @@ function deletePost () {
     color: #777;
     border-top: 1px solid #f0f0f0;
     padding-top: 12px;
-  }
-
-  &__author,
-  &__date {
-    display: flex;
-    align-items: center;
   }
 
   &__actions {

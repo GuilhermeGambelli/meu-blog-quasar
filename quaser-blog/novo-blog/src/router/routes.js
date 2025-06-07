@@ -14,7 +14,12 @@ const routes = [
       // Rotas para Autores
       { path: 'autores', component: () => import('pages/autores/ListAutoresPage.vue') },
       { path: 'autores/novo', component: () => import('pages/autores/FormAutorPage.vue'), meta: { mode: 'create' } },
-      { path: 'autores/:id/editar', component: () => import('pages/autores/FormAutorPage.vue'), meta: { mode: 'edit' }, props: true }
+      { path: 'autores/:id/editar', component: () => import('pages/autores/FormAutorPage.vue'), meta: { mode: 'edit' }, props: true },
+
+      //Rotas para categorias
+      { path: 'categorias', component: () => import('pages/categorias/ListCategoriasPage.vue') },
+      { path: 'categorias/nova', component: () => import('pages/categorias/FormCategoriaPage.vue') },
+      { path: 'categorias/:id/editar', component: () => import('pages/categorias/FormCategoriaPage.vue') }
     ]
   },
 

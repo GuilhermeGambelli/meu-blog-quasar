@@ -12,7 +12,7 @@
         />
 
         <q-toolbar-title>
-          Meu Blog
+          Nave Quasar Blog
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -103,6 +103,14 @@ const menuLinks = ref([
     children: [
       { title: 'Gerenciar autores', icon: 'manage_accounts', to: '/autores' },
       { title: 'Adicionar novo autor', icon: 'person_add', to: '/autores/novo' }
+    ]
+  },
+  {
+    title: 'Categorias',
+    icon: 'category',
+    children: [
+      { title: 'Gerenciar categorias', icon: 'view_list', to: '/categorias' },
+      { title: 'Nova categoria', icon: 'add_circle_outline', to: '/categorias/nova' }
     ]
   }
 ])

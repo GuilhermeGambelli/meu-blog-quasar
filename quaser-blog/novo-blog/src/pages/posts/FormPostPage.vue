@@ -48,7 +48,7 @@
           <q-select
             filled
             v-model="postData.categoria"
-            :options="['Tecnologia', 'Notícias', 'Esportes', 'Cultura', 'Viagem']"
+            :options="categoryOptions"
             label="Categoria *"
             class="q-mt-md"
             lazy-rules
@@ -91,24 +91,34 @@ import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { usePostStore } from 'src/stores/post-store'
 import { useAutorStore } from 'src/stores/autor-store'
+import { useCategoryStore } from 'src/stores/categoria-store' // 1. IMPORTA A NOVA STORE
 import { useQuasar } from 'quasar'
 
 const router = useRouter()
 const route = useRoute()
 const $q = useQuasar()
 
+// Instanciando todas as stores necessárias
 const postStore = usePostStore()
 const autorStore = useAutorStore()
+const categoryStore = useCategoryStore() // 2. INSTANCIA A NOVA STORE
 
+// Tornando o state reativo
 const { currentPost } = storeToRefs(postStore)
 const { allAutores: autores } = storeToRefs(autorStore)
+const { allCategories: categories } = storeToRefs(categoryStore) // 3. OBTÉM AS CATEGORIAS
 
 const postId = computed(() => route.params.id)
 const isEditMode = computed(() => !!postId.value)
+
+// Opções de Autor (como antes)
 const autorOptions = computed(() => autores.value.map(autor => ({
   label: autor.nome,
   value: autor.id
 })))
+
+// 4. OPÇÕES DE CATEGORIA AGORA SÃO DINÂMICAS
+const categoryOptions = computed(() => categories.value.map(cat => cat.nome))
 
 const postData = ref({
   titulo: '',
@@ -120,7 +130,9 @@ const postData = ref({
 })
 
 onMounted(() => {
+  // 5. BUSCA OS DADOS NECESSÁRIOS AO MONTAR O COMPONENTE
   autorStore.fetchAutores()
+  categoryStore.fetchCategories()
   if (isEditMode.value) {
     postStore.fetchPostById(postId.value)
   }
