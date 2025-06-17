@@ -37,8 +37,7 @@ export const usePostStore = defineStore('post', {
       this.currentPost = null
       this.error = null
       try {
-        // Incluindo o autor junto com o post
-        const response = await api.get(`/posts/${id}?_expand=autor`)
+        const response = await api.get(`/posts/${id}`)
         this.currentPost = response.data
       } catch (e) {
         this.error = 'Falha ao carregar o post.'

@@ -7,7 +7,9 @@
         filled
         v-model="autorData.nome"
         label="Nome Completo *"
+        lazy-rules
         :rules="[val => !!val || 'O nome é obrigatório']"
+        :loading="loading"
       />
 
       <q-input
@@ -15,7 +17,12 @@
         v-model="autorData.email"
         label="E-mail *"
         type="email"
-        :rules="[ val => !!val || 'O e-mail é obrigatório' ]"
+        lazy-rules
+        :rules="[
+          val => !!val || 'O e-mail é obrigatório',
+          val => /.+@.+\..+/.test(val) || 'E-mail inválido'
+        ]"
+        :loading="loading"
       />
 
       <div class="q-mt-xl row items-center justify-between">
@@ -43,9 +50,10 @@ import { useAutorStore } from 'src/stores/autor-store'
 
 export default {
   name: 'FormAutorPage',
-  data() {
+  data () {
     return {
       autorData: {
+        id: null,
         nome: '',
         email: ''
       }
@@ -53,28 +61,30 @@ export default {
   },
   computed: {
     ...mapState(useAutorStore, ['currentAutor', 'loading']),
-    isEditMode() {
+    isEditMode () {
       return !!this.$route.params.id
     }
   },
   methods: {
-    ...mapActions(useAutorStore, ['createAutor', /*...*/]),
-    async onSubmit() {
+    ...mapActions(useAutorStore, ['fetchAutorById', 'createAutor', 'updateAutor', 'deleteAutor']),
+
+    async onSubmit () {
       try {
         if (this.isEditMode) {
           await this.updateAutor(this.autorData)
-          this.$q.notify({ type: 'positive', message: 'Autor atualizado!' }) // Note o `this.$q`
+          this.$q.notify({ type: 'positive', message: 'Autor atualizado com sucesso!' })
         } else {
           await this.createAutor(this.autorData)
-          this.$q.notify({ type: 'positive', message: 'Autor criado!' }) // Note o `this.$q`
+          this.$q.notify({ type: 'positive', message: 'Autor criado com sucesso!' })
         }
         this.$router.push('/autores')
       // eslint-disable-next-line no-unused-vars
       } catch (error) {
-        this.$q.notify({ type: 'negative', message: 'Falha ao salvar o autor.' }) // Note o `this.$q`
+        this.$q.notify({ type: 'negative', message: 'Falha ao salvar o autor.' })
       }
     },
-    async handleDelete() {
+
+    async handleDelete () {
       this.$q.dialog({
         title: 'Confirmar Exclusão',
         message: 'Tem certeza?',
@@ -87,14 +97,18 @@ export default {
     }
   },
   watch: {
-    currentAutor(newAutor) {
+    // Este "observador" fica esperando os dados do autor chegarem da API.
+    // Assim que chegam, ele preenche o formulário.
+    currentAutor (newAutor) {
       if (newAutor && this.isEditMode) {
         this.autorData = { ...newAutor }
       }
     }
   },
-  created() {
+  created () {
+    // Ao criar o componente, verifica se estamos no modo de edição pela URL.
     if (this.isEditMode) {
+      // Se estivermos, chama a action para buscar os dados do autor específico.
       this.fetchAutorById(this.$route.params.id)
     }
   }

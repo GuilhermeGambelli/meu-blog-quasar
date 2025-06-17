@@ -15,7 +15,7 @@
 
     <div class="post-card__content">
       <div class="post-card__header">
-        <h3 class="post-card__title">{{ post.titulo }}</h3> 
+        <h3 class="post-card__title">{{ post.titulo }}</h3>
         <q-chip
           dense
           color="primary"
@@ -31,7 +31,7 @@
       <div class="post-card__meta">
         <div class="post-card__author">
           <q-icon name="person" class="q-mr-xs" />
-          <span>{{ post.autor?.nome || 'Autor Desconhecido' }}</span>
+          <span>{{ authorName }}</span>
         </div>
         <div class="post-card__date">
           <q-icon name="event" class="q-mr-xs" />
@@ -51,6 +51,8 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
+import { useAutorStore } from 'src/stores/autor-store'
 
 const props = defineProps({
   post: {
@@ -61,6 +63,17 @@ const props = defineProps({
 
 const emit = defineEmits(['delete'])
 const router = useRouter()
+
+const autorStore = useAutorStore()
+const { allAutores: autores } = storeToRefs(autorStore)
+
+const authorName = computed(() => {
+  if (!props.post || !props.post.autorId) {
+    return 'Autor Desconhecido'
+  }
+  const autor = autores.value.find(a => a.id === props.post.autorId)
+  return autor ? autor.nome : 'Autor Desconhecido'
+})
 
 const formattedDate = computed(() => {
   if (!props.post.dataPublicacao) return ''
@@ -90,16 +103,14 @@ function deletePost () {
   flex-direction: column;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   height: 100%;
-  cursor: pointer; // Indica que o card inteiro é clicável
+  cursor: pointer;
 
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
   }
 
-  &__image {
-    // A q-img já cuida da imagem, sem necessidade de muito estilo aqui
-  }
+  &__image {}
 
   &__content {
     padding: 16px;
@@ -132,7 +143,6 @@ function deletePost () {
     color: #555;
     margin: 0 0 16px 0;
     flex-grow: 1;
-
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;

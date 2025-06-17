@@ -52,12 +52,12 @@ export const useAutorStore = defineStore('autor', {
       this.loading = true
       try {
         const response = await api.post('/autores', autorData)
-        this.autores.push(response.data) // Adiciona o novo autor à lista
+        this.autores.push(response.data)
         return response.data
       } catch (e) {
         this.error = 'Falha ao criar autor.'
         console.error(e)
-        throw e // Re-throw para o componente poder tratar o erro
+        throw e 
       } finally {
         this.loading = false
       }
@@ -67,7 +67,6 @@ export const useAutorStore = defineStore('autor', {
       this.loading = true
       try {
         const response = await api.put(`/autores/${autorData.id}`, autorData)
-        // Atualiza o autor na lista
         const index = this.autores.findIndex(a => a.id === autorData.id)
         if (index !== -1) {
           this.autores.splice(index, 1, response.data)
@@ -86,7 +85,6 @@ export const useAutorStore = defineStore('autor', {
       this.loading = true
       try {
         await api.delete(`/autores/${id}`)
-        // Remove o autor da lista
         this.autores = this.autores.filter(a => a.id !== id)
       } catch (e) {
         this.error = 'Falha ao deletar autor.'

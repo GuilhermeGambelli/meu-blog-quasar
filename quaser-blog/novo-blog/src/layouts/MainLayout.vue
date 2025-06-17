@@ -1,40 +1,48 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header bordered class="bg-white text-primary">
-      <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
-
-        <q-toolbar-title>
-          Nave Quasar Blog
-        </q-toolbar-title>
-      </q-toolbar>
-    </q-header>
-
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
       bordered
-      class="bg-grey-1"
+      :mini="miniState"
+      @mouseover="miniState = false"
+      @mouseleave="miniState = true"
+      mini-to-overlay
+      :width="250"
+      :breakpoint="500"
+      class="bg-grey-10 text-white"
     >
-      <q-list>
-        <q-item-label header class="text-grey-8">
-          Menu Principal
-        </q-item-label>
+      <div class="drawer-logo-container">
+        <q-img
+          v-if="!miniState"
+          src="/logos/logo-completo.png"
+          fit="contain"
+          height="40px"
+          class="q-ma-md"
+        />
+        <q-img
+          v-else
+          src="/logos/logo-mini.png"
+          fit="contain"
+          height="30px"
+        />
+      </div>
 
+      <q-separator dark />
+
+      <q-list padding>
         <template v-for="link in menuLinks" :key="link.title">
           <q-expansion-item
             v-if="link.children"
             :icon="link.icon"
             :label="link.title"
             group="main-menu"
+            header-class="text-white"
+            expand-icon-class="text-white"
           >
+            <q-tooltip v-if="miniState" anchor="center right" self="center left" :offset="[10, 10]">
+              {{ link.title }}
+            </q-tooltip>
             <q-list class="q-pl-lg">
               <q-item
                 v-for="child in link.children"
@@ -43,36 +51,22 @@
                 v-ripple
                 :to="child.to"
                 exact
+                class="menu-link"
               >
                 <q-item-section avatar>
-                  <q-icon :name="child.icon" />
+                  <q-icon :name="child.icon" color="white"/>
                 </q-item-section>
                 <q-item-section>
-                  {{ child.title }}
+                  <q-item-label>{{ child.title }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
           </q-expansion-item>
-
-          <q-item
-            v-else
-            clickable
-            v-ripple
-            :to="link.to"
-            exact
-          >
-            <q-item-section avatar>
-              <q-icon :name="link.icon" />
-            </q-item-section>
-            <q-item-section>
-              {{ link.title }}
-            </q-item-section>
-          </q-item>
         </template>
       </q-list>
     </q-drawer>
 
-    <q-page-container>
+    <q-page-container class="bg-grey-2">
       <router-view />
     </q-page-container>
   </q-layout>
@@ -82,12 +76,10 @@
 import { ref } from 'vue'
 
 const leftDrawerOpen = ref(false)
+const miniState = ref(true)
 
-function toggleLeftDrawer () {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-}
+// MUDANÇA AQUI: A variável 'logoMini' foi removida, não é mais necessária!
 
-// Nova estrutura de dados para o menu com itens e sub-itens (children)
 const menuLinks = ref([
   {
     title: 'Posts',
@@ -115,3 +107,18 @@ const menuLinks = ref([
   }
 ])
 </script>
+
+<style lang="scss" scoped>
+.menu-link.q-item--active {
+  color: white !important;
+  background-color: rgba(25, 118, 210, 0.3);
+  border-left: 4px solid $primary;
+}
+
+.drawer-logo-container {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
