@@ -78,8 +78,6 @@ import { ref } from 'vue'
 const leftDrawerOpen = ref(false)
 const miniState = ref(true)
 
-// MUDANÇA AQUI: A variável 'logoMini' foi removida, não é mais necessária!
-
 const menuLinks = ref([
   {
     title: 'Posts',
